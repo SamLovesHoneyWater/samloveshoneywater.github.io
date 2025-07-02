@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Planning as Cognitive Architecture - Sam Huang</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a2332;
+            --secondary-gray: #4a5568;
+            --light-gray: #f7fafc;
+            --accent-teal: #2d7d8a;
+            --warm-white: #fefefe;
+            --border-light: #e2e8f0;
+            --text-muted: #718096;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            line-height: 1.7;
+            color: var(--primary-navy);
+            background-color: var(--warm-white);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            background: var(--warm-white);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--primary-navy);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            color: var(--secondary-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Blog Header */
+        .blog-header {
+            padding: 3rem 0;
+            background: var(--light-gray);
+        }
+
+        .blog-category {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .blog-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-navy);
+            line-height: 1.2;
+        }
+
+        .blog-meta {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .blog-excerpt {
+            font-size: 1.2rem;
+            color: var(--secondary-gray);
+            font-style: italic;
+            max-width: 600px;
+        }
+
+        /* Blog Content */
+        .blog-content {
+            padding: 4rem 0;
+        }
+
+        .blog-content h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem 0;
+            color: var(--primary-navy);
+        }
+
+        .blog-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem 0;
+            color: var(--primary-navy);
+        }
+
+        .blog-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-gray);
+        }
+
+        .blog-content ul, .blog-content ol {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .blog-content li {
+            font-size: 1.1rem;
+            color: var(--secondary-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-content blockquote {
+            border-left: 4px solid var(--accent-teal);
+            padding-left: 2rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: var(--secondary-gray);
+        }
+
+        .blog-content code {
+            background: var(--light-gray);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Back Navigation */
+        .back-nav {
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .back-link {
+            font-family: 'Inter', sans-serif;
+            color: var(--accent-teal);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary-navy);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-navy);
+            color: var(--warm-white);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            color: var(--warm-white);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .blog-title {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">Sam Huang</a>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#blog">Blog</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="blog-header">
+            <div class="container">
+                <div class="blog-category">Philosophy & Society</div>
+                <h1 class="blog-title">Urban Planning as Cognitive Architecture</h1>
+                <div class="blog-meta">Published December 15, 2024 • 7 min read</div>
+                <p class="blog-excerpt">
+                    How the design of our cities shapes the way we think, interact, and form communities.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-content">
+            <div class="container">
+                <p>
+                    Every morning, millions of people navigate through urban environments that silently shape their thoughts, decisions, and social interactions. The layout of streets, the height of buildings, the placement of parks—these aren't just aesthetic choices. They're cognitive interventions that influence how we process information, form relationships, and understand our place in the world.
+                </p>
+
+                <p>
+                    As someone who spends their days thinking about how information flows through artificial neural networks, I've become fascinated by how information flows through the neural networks we call cities. Urban planning, I've come to realize, is a form of cognitive architecture—the design of external structures that scaffold and shape internal mental processes.
+                </p>
+
+                <h2>The City as Extended Mind</h2>
+
+                <p>
+                    Philosophers Andy Clark and David Chalmers introduced the concept of the "extended mind"—the idea that our cognitive processes don't stop at the boundaries of our skulls but extend into the tools and environments we use. A smartphone becomes part of our memory system. A calculator extends our mathematical reasoning. And cities? Cities extend our social cognition.
+                </p>
+
+                <p>
+                    Consider how different urban layouts encourage different types of thinking and interaction:
+                </p>
+
+                <ul>
+                    <li><strong>Grid systems</strong> promote efficient navigation but can reduce serendipitous encounters</li>
+                    <li><strong>Winding streets</strong> slow down movement and encourage exploration and discovery</li>
+                    <li><strong>Central plazas</strong> create focal points for community gathering and collective decision-making</li>
+                    <li><strong>Mixed-use neighborhoods</strong> integrate different aspects of life, promoting holistic thinking</li>
+                </ul>
+
+                <p>
+                    Each design choice creates different affordances for thought and social interaction.
+                </p>
+
+                <h2>Wayfinding and Mental Models</h2>
+
+                <p>
+                    The way we navigate cities directly shapes how we build mental models of complex systems. Kevin Lynch's seminal work "The Image of the City" identified five key elements that people use to understand urban spaces: paths, edges, districts, nodes, and landmarks.
+                </p>
+
+                <p>
+                    These same cognitive tools—hierarchical organization, boundary detection, pattern recognition, and landmark-based navigation—are fundamental to how we understand abstract concepts. A city with clear districts and landmarks doesn't just make navigation easier; it trains our minds to think in terms of organized, hierarchical systems.
+                </p>
+
+                <h3>The Cognitive Load of Urban Complexity</h3>
+
+                <p>
+                    Urban environments vary dramatically in their cognitive demands. A well-designed city minimizes unnecessary cognitive load while maximizing meaningful complexity. This mirrors principles from user interface design and information architecture:
+                </p>
+
+                <ul>
+                    <li><strong>Progressive disclosure:</strong> Revealing information and options gradually as needed</li>
+                    <li><strong>Consistent patterns:</strong> Using familiar layouts and signage systems</li>
+                    <li><strong>Clear hierarchy:</strong> Making important destinations and pathways obvious</li>
+                    <li><strong>Error recovery:</strong> Providing multiple routes and clear correction opportunities</li>
+                </ul>
+
+                <blockquote>
+                    "A city is not gauged by its length and width, but by the broadth of its vision and the height of its dreams." - Herb Caen
+                </blockquote>
+
+                <h2>Social Cognition and Urban Design</h2>
+
+                <p>
+                    Perhaps nowhere is the cognitive impact of urban design more evident than in how cities shape social interaction. The arrangement of public spaces, the scale of buildings, and the density of development all influence how we relate to one another.
+                </p>
+
+                <h3>The Goldilocks Zone of Density</h3>
+
+                <p>
+                    Research in environmental psychology suggests there's an optimal density for human social cognition—not too sparse (leading to isolation) and not too dense (leading to overstimulation and withdrawal). This "Goldilocks zone" varies by culture and individual preference, but the principle remains: urban density directly affects our capacity for social processing.
+                </p>
+
+                <p>
+                    Jane Jacobs observed that successful urban neighborhoods require a delicate balance of:
+                </p>
+
+                <ul>
+                    <li><strong>Diversity:</strong> Mixed uses that bring different people together</li>
+                    <li><strong>Density:</strong> Enough people to create vibrancy without overwhelming</li>
+                    <li><strong>Permeability:</strong> Multiple pathways that encourage movement and encounter</li>
+                    <li><strong>Scale:</strong> Human-sized spaces that feel manageable and navigable</li>
+                </ul>
+
+                <h2>The Neuroscience of Place</h2>
+
+                <p>
+                    Recent advances in neuroscience have begun to reveal the biological mechanisms behind our cognitive responses to urban environments. Studies using mobile EEG and fMRI have shown that different urban features activate different neural networks:
+                </p>
+
+                <p>
+                    <strong>Natural elements</strong> (trees, water, green spaces) activate the default mode network associated with restoration and creative thinking. This explains why parks and gardens feel mentally refreshing—they literally give our brains a break from active processing.
+                </p>
+
+                <p>
+                    <strong>Complex architectural details</strong> engage visual processing networks and can enhance pattern recognition abilities. This might explain why people often report feeling more creative in visually rich environments.
+                </p>
+
+                <p>
+                    <strong>Social spaces</strong> activate mirror neuron systems and theory-of-mind networks, enhancing our ability to understand and predict others' behavior.
+                </p>
+
+                <h2>Digital Cities and Cognitive Augmentation</h2>
+
+                <p>
+                    As cities become increasingly instrumented with sensors, displays, and interactive technologies, we're entering an era of "cognitive augmentation" through urban design. Smart city technologies can:
+                </p>
+
+                <ul>
+                    <li>Provide real-time information to reduce cognitive load</li>
+                    <li>Adapt environments based on collective behavior patterns</li>
+                    <li>Create new forms of social interaction through shared digital experiences</li>
+                    <li>Personalize urban experiences based on individual preferences and needs</li>
+                </ul>
+
+                <p>
+                    But this technological augmentation also raises important questions about cognitive dependency and the potential for manipulation through environmental design.
+                </p>
+
+                <h2>Case Study: Copenhagen's Bicycle Infrastructure</h2>
+
+                <p>
+                    Copenhagen's transformation into a cycling city offers a compelling example of how infrastructure shapes cognition and culture. The city's extensive network of protected bike lanes doesn't just make cycling safer—it fundamentally changes how residents think about transportation, health, and community.
+                </p>
+
+                <p>
+                    The cognitive effects are multifaceted:
+                </p>
+
+                <ul>
+                    <li><strong>Embodied cognition:</strong> Physical activity enhances mental processing and creativity</li>
+                    <li><strong>Environmental awareness:</strong> Cyclists are more attuned to weather, seasons, and neighborhood changes</li>
+                    <li><strong>Social connection:</strong> Bike infrastructure creates opportunities for casual social interaction</li>
+                    <li><strong>Systems thinking:</strong> Understanding the city as an interconnected network rather than isolated destinations</li>
+                </ul>
+
+                <h2>Designing for Cognitive Diversity</h2>
+
+                <p>
+                    Just as we're learning to design technology that accommodates different cognitive styles and abilities, urban planning must account for neurodiversity. Different people have different cognitive needs:
+                </p>
+
+                <p>
+                    <strong>Introverts</strong> may need quiet spaces and clear escape routes from social situations. <strong>Extroverts</strong> thrive in environments with multiple opportunities for social interaction. <strong>People with ADHD</strong> may benefit from environments with clear structure and minimal distractions. <strong>Those on the autism spectrum</strong> may need predictable layouts and sensory-friendly spaces.
+                </p>
+
+                <p>
+                    The most successful cities provide a variety of cognitive environments, allowing people to find spaces that match their mental needs and preferences.
+                </p>
+
+                <h2>The Future of Cognitive Cities</h2>
+
+                <p>
+                    As our understanding of the relationship between environment and cognition deepens, we have the opportunity to design cities that actively enhance human mental capabilities. This might include:
+                </p>
+
+                <ul>
+                    <li><strong>Biophilic design</strong> that integrates natural elements to support mental restoration</li>
+                    <li><strong>Adaptive environments</strong> that respond to collective stress levels and cognitive load</li>
+                    <li><strong>Learning landscapes</strong> that encourage exploration and discovery</li>
+                    <li><strong>Contemplative spaces</strong> designed specifically for reflection and deep thinking</li>
+                </ul>
+
+                <h2>Implications for Policy and Practice</h2>
+
+                <p>
+                    Recognizing cities as cognitive architecture has profound implications for urban policy. Zoning decisions, transportation investments, and public space design aren't just about efficiency or aesthetics—they're about shaping the collective intelligence of urban populations.
+                </p>
+
+                <p>
+                    This perspective suggests we need new metrics for urban success: not just economic productivity or environmental sustainability, but cognitive health and social cohesion. We need to ask not just "Does this development generate tax revenue?" but "Does it enhance the cognitive capabilities of the people who live here?"
+                </p>
+
+                <h2>Conclusion: Building Better Minds Through Better Cities</h2>
+
+                <p>
+                    The relationship between urban design and human cognition is bidirectional. Our cities shape how we think, and how we think shapes our cities. As we face complex global challenges that require new forms of collective intelligence—climate change, inequality, technological disruption—the design of our urban environments becomes increasingly critical.
+                </p>
+
+                <p>
+                    By understanding cities as cognitive architecture, we can design urban environments that don't just house human activity but actively enhance human potential. The future of urban planning lies not just in creating efficient or beautiful cities, but in creating cities that make us smarter, more creative, and more connected to one another.
+                </p>
+
+                <p>
+                    In the end, the question isn't just how we adapt to our cities, but how we can design cities that help us become the best versions of ourselves. The architecture of our cities is, ultimately, the architecture of our minds.
+                </p>
+
+                <div class="back-nav">
+                    <a href="index.html#blog" class="back-link">← Back to Blog</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="#">GitHub</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Twitter</a>
+                    <a href="#">Email</a>
+                </div>
+                <p>&copy; 2025 Sam Huang. Built with curiosity and code.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

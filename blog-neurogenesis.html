@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulating Neurogenesis for Machine Learning - Sam Huang</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a2332;
+            --secondary-gray: #4a5568;
+            --light-gray: #f7fafc;
+            --accent-teal: #2d7d8a;
+            --warm-white: #fefefe;
+            --border-light: #e2e8f0;
+            --text-muted: #718096;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            line-height: 1.7;
+            color: var(--primary-navy);
+            background-color: var(--warm-white);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            background: var(--warm-white);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--primary-navy);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            color: var(--secondary-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Blog Header */
+        .blog-header {
+            padding: 3rem 0;
+            background: var(--light-gray);
+        }
+
+        .blog-category {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .blog-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-navy);
+            line-height: 1.2;
+        }
+
+        .blog-meta {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .blog-excerpt {
+            font-size: 1.2rem;
+            color: var(--secondary-gray);
+            font-style: italic;
+            max-width: 600px;
+        }
+
+        /* Blog Content */
+        .blog-content {
+            padding: 4rem 0;
+        }
+
+        .blog-content h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem 0;
+            color: var(--primary-navy);
+        }
+
+        .blog-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem 0;
+            color: var(--primary-navy);
+        }
+
+        .blog-content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-gray);
+        }
+
+        .blog-content ul, .blog-content ol {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .blog-content li {
+            font-size: 1.1rem;
+            color: var(--secondary-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-content blockquote {
+            border-left: 4px solid var(--accent-teal);
+            padding-left: 2rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: var(--secondary-gray);
+        }
+
+        .blog-content code {
+            background: var(--light-gray);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Back Navigation */
+        .back-nav {
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .back-link {
+            font-family: 'Inter', sans-serif;
+            color: var(--accent-teal);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary-navy);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-navy);
+            color: var(--warm-white);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            color: var(--warm-white);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .blog-title {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">Sam Huang</a>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#blog">Blog</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="blog-header">
+            <div class="container">
+                <div class="blog-category">AI & Neural Networks</div>
+                <h1 class="blog-title">Simulating Neurogenesis for Machine Learning</h1>
+                <div class="blog-meta">Published January 1, 2025 • 8 min read</div>
+                <p class="blog-excerpt">
+                    Exploring how biological neural development can inspire new approaches to artificial neural network architecture and training.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-content">
+            <div class="container">
+                <p>
+                    The human brain's ability to continuously generate new neurons throughout life—a process called neurogenesis—has fascinated neuroscientists for decades. But what if we could harness this biological phenomenon to create more adaptive and efficient artificial neural networks?
+                </p>
+
+                <p>
+                    Traditional neural networks are static structures: once trained, their architecture remains fixed. While this approach has yielded remarkable results, it fundamentally differs from how biological brains operate. Real neural networks are dynamic, constantly rewiring and generating new connections based on experience and need.
+                </p>
+
+                <h2>The Biology of Neurogenesis</h2>
+
+                <p>
+                    Neurogenesis occurs primarily in two regions of the adult brain: the hippocampus (crucial for learning and memory) and the olfactory bulb (responsible for processing smells). New neurons don't just appear randomly—they're generated in response to specific stimuli, learning experiences, and environmental demands.
+                </p>
+
+                <p>
+                    This process involves several key mechanisms:
+                </p>
+
+                <ul>
+                    <li><strong>Activity-dependent generation:</strong> New neurons are created when existing networks are heavily utilized</li>
+                    <li><strong>Selective integration:</strong> Only neurons that successfully integrate into existing circuits survive</li>
+                    <li><strong>Competitive plasticity:</strong> New neurons compete with existing ones for synaptic connections</li>
+                    <li><strong>Functional specialization:</strong> Different types of neurons are generated based on the specific computational needs</li>
+                </ul>
+
+                <h2>Translating Biology to Algorithms</h2>
+
+                <p>
+                    My research explores how we can implement these principles in artificial neural networks. The core idea is to create networks that can dynamically add new nodes and connections during training, not just adjust weights.
+                </p>
+
+                <h3>Dynamic Node Generation</h3>
+
+                <p>
+                    Instead of pre-defining network architecture, we start with a minimal structure and allow the network to grow organically. New nodes are added when:
+                </p>
+
+                <ul>
+                    <li>Existing nodes reach saturation (high activation frequency)</li>
+                    <li>Learning plateaus suggest architectural limitations</li>
+                    <li>New data patterns require additional representational capacity</li>
+                </ul>
+
+                <h3>Competitive Integration</h3>
+
+                <p>
+                    Newly generated nodes must prove their worth by contributing to the network's performance. Those that fail to integrate effectively are pruned, mimicking the natural selection process in biological neurogenesis.
+                </p>
+
+                <blockquote>
+                    "The most interesting aspect of this approach is that the network essentially designs itself, discovering optimal architectures through the same evolutionary pressures that shaped biological brains."
+                </blockquote>
+
+                <h2>Preliminary Results</h2>
+
+                <p>
+                    Early experiments with this neurogenesis-inspired approach show promising results across several domains:
+                </p>
+
+                <ul>
+                    <li><strong>Continual Learning:</strong> Networks maintain performance on old tasks while learning new ones, reducing catastrophic forgetting</li>
+                    <li><strong>Efficiency:</strong> Dynamic growth leads to more compact networks that achieve similar performance with fewer parameters</li>
+                    <li><strong>Adaptability:</strong> Networks can adjust their architecture to handle different types of data without manual intervention</li>
+                </ul>
+
+                <h2>Challenges and Future Directions</h2>
+
+                <p>
+                    While the initial results are encouraging, several challenges remain:
+                </p>
+
+                <p>
+                    <strong>Computational Overhead:</strong> Dynamic architecture changes require additional computation during training. We're exploring efficient algorithms to minimize this cost.
+                </p>
+
+                <p>
+                    <strong>Stability:</strong> Ensuring that architectural changes don't destabilize previously learned representations requires careful balance between growth and preservation.
+                </p>
+
+                <p>
+                    <strong>Interpretability:</strong> Understanding why the network chooses specific architectural changes is crucial for debugging and improvement.
+                </p>
+
+                <h2>Implications for AI Development</h2>
+
+                <p>
+                    This research suggests a fundamental shift in how we think about neural network design. Rather than treating architecture as a fixed constraint, we can view it as another learnable parameter—one that the network optimizes based on its experience and computational needs.
+                </p>
+
+                <p>
+                    The implications extend beyond technical improvements. By more closely mimicking biological intelligence, we might develop AI systems that are more robust, efficient, and capable of the kind of flexible learning that characterizes human cognition.
+                </p>
+
+                <p>
+                    As we continue to explore this intersection of neuroscience and machine learning, we're not just building better algorithms—we're gaining deeper insights into the fundamental principles of intelligence itself.
+                </p>
+
+                <div class="back-nav">
+                    <a href="index.html#blog" class="back-link">← Back to Blog</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="#">GitHub</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Twitter</a>
+                    <a href="#">Email</a>
+                </div>
+                <p>&copy; 2025 Sam Huang. Built with curiosity and code.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

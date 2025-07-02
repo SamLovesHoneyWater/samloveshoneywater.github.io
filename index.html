@@ -1,1 +1,454 @@
-Hello World!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sam Huang - Builder & Thinker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a2332;
+            --secondary-gray: #4a5568;
+            --light-gray: #f7fafc;
+            --accent-teal: #2d7d8a;
+            --warm-white: #fefefe;
+            --border-light: #e2e8f0;
+            --text-muted: #718096;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            line-height: 1.6;
+            color: var(--primary-navy);
+            background-color: var(--warm-white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            background: var(--warm-white);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--primary-navy);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            color: var(--secondary-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--warm-white) 100%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            color: var(--primary-navy);
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: var(--secondary-gray);
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .hero .description {
+            font-size: 1.1rem;
+            color: var(--secondary-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Featured Content */
+        .featured {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: var(--primary-navy);
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .featured-card {
+            background: var(--warm-white);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(26, 35, 50, 0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card-category {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-navy);
+        }
+
+        .card-excerpt {
+            color: var(--secondary-gray);
+            margin-bottom: 1rem;
+        }
+
+        .card-meta {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Categories Section */
+        .categories {
+            padding: 4rem 0;
+            background: var(--light-gray);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background: var(--warm-white);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-navy);
+        }
+
+        .category-description {
+            color: var(--secondary-gray);
+            font-size: 0.95rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 4rem 0;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-gray);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-navy);
+            color: var(--warm-white);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            color: var(--warm-white);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Subtle background pattern */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(45, 125, 138, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(26, 35, 50, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">Sam Huang</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Builder & Thinker</h1>
+                    <p class="subtitle">Exploring the intersection of technology, cognition, and society</p>
+                    <p class="description">
+                        Welcome to my corner of the internet where I share thoughts on AI, neural networks, game strategy, 
+                        urban planning, and the fascinating complexity of human cognition. Join me as I explore ideas 
+                        that bridge the technical and the philosophical.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured" id="blog">
+            <div class="container">
+                <h2 class="section-title">Featured Content</h2>
+                <div class="featured-grid">
+                    <a href="blog-neurogenesis.html" class="featured-card">
+                        <div class="card-category">AI & Neural Networks</div>
+                        <h3 class="card-title">Simulating Neurogenesis for Machine Learning</h3>
+                        <p class="card-excerpt">
+                            Exploring how biological neural development can inspire new approaches to artificial neural network architecture and training.
+                        </p>
+                        <div class="card-meta">January 1, 2025 • 8 min read</div>
+                    </a>
+
+                    <a href="blog-game-balance.html" class="featured-card">
+                        <div class="card-category">Games & Strategy</div>
+                        <h3 class="card-title">The Mathematics of Board Game Balance</h3>
+                        <p class="card-excerpt">
+                            Analyzing game mechanics through the lens of mathematical optimization and player psychology.
+                        </p>
+                        <div class="card-meta">December 28, 2024 • 6 min read</div>
+                    </a>
+
+                    <a href="blog-urban-planning.html" class="featured-card">
+                        <div class="card-category">Philosophy & Society</div>
+                        <h3 class="card-title">Urban Planning as Cognitive Architecture</h3>
+                        <p class="card-excerpt">
+                            How the design of our cities shapes the way we think, interact, and form communities.
+                        </p>
+                        <div class="card-meta">December 15, 2024 • 7 min read</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories" id="projects">
+            <div class="container">
+                <h2 class="section-title">Explore by Category</h2>
+                <div class="categories-grid">
+                    <div class="category-card">
+                        <div class="category-icon">🧠</div>
+                        <h3 class="category-title">AI & Neural Networks</h3>
+                        <p class="category-description">
+                            Projects and thoughts on machine learning, neural architecture, and artificial intelligence applications.
+                        </p>
+                    </div>
+
+                    <div class="category-card">
+                        <div class="category-icon">🎲</div>
+                        <h3 class="category-title">Games & Strategy</h3>
+                        <p class="category-description">
+                            Analysis of board games, wargames, and strategic thinking across different domains.
+                        </p>
+                    </div>
+
+                    <div class="category-card">
+                        <div class="category-icon">🏙️</div>
+                        <h3 class="category-title">Philosophy & Society</h3>
+                        <p class="category-description">
+                            Explorations of human cognition, urban planning, critical theory, and social systems.
+                        </p>
+                    </div>
+
+                    <div class="category-card">
+                        <div class="category-icon">⚡</div>
+                        <h3 class="category-title">Personal Projects</h3>
+                        <p class="category-description">
+                            Trading algorithms, automation tools, Minecraft server management, and other experimental builds.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <div class="container">
+                <h2 class="section-title">About Sam</h2>
+                <div class="about-content">
+                    <p>
+                        I'm an early-career technologist with a passion for building systems that bridge the gap between 
+                        human cognition and artificial intelligence. My work spans software engineering, machine learning, 
+                        and AI development, but my curiosity extends far beyond code.
+                    </p>
+                    <p>
+                        What fascinates me most is the intersection of technology with philosophy, cognitive science, and 
+                        social systems. Whether I'm designing neural networks inspired by biological processes, analyzing 
+                        the strategic depth of board games, or thinking about how urban planning shapes human behavior, 
+                        I'm always looking for connections between seemingly disparate fields.
+                    </p>
+                    <p>
+                        This site is my space to share projects, ideas, and explorations that I hope will be interesting 
+                        to both technical professionals and curious minds from all backgrounds.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="#">GitHub</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Twitter</a>
+                    <a href="#">Email</a>
+                </div>
+                <p>&copy; 2025 Sam Huang. Built with curiosity and code.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
