@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你是什么军事装备？| What Military Equipment Are You?</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;--gold:#ffd700;--amber:#f0a500;--green:#4a5d23;--green2:#6b8c3e;--red:#c0392b;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:640px;margin:0 auto;padding:16px}
+
+/* Progress bar */
+.progress-wrap{position:fixed;top:0;left:0;right:0;height:4px;background:var(--bg3);z-index:100}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--green2),var(--gold));transition:width .4s ease;width:0%}
+
+/* Landing */
+#landing{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90vh;text-align:center;animation:fadeIn .6s ease}
+#landing h1{font-size:2.2em;margin-bottom:8px;background:linear-gradient(135deg,var(--gold),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+#landing .subtitle{color:var(--text2);font-size:1em;margin-bottom:32px}
+#landing .hero{font-size:4em;margin-bottom:24px}
+.btn{display:inline-block;padding:14px 36px;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:1px solid var(--green2);border-radius:8px;font-size:1.1em;cursor:pointer;transition:all .2s;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(255,215,0,.2)}
+.btn-sm{padding:10px 24px;font-size:.9em}
+
+/* Quiz */
+#quiz{display:none;min-height:90vh;padding-top:24px}
+.q-counter{text-align:center;color:var(--text2);font-size:.85em;margin-bottom:8px}
+.q-card{background:var(--bg2);border:1px solid var(--bg3);border-radius:12px;padding:28px 24px;animation:slideIn .4s ease}
+.q-text-cn{font-size:1.15em;line-height:1.7;margin-bottom:12px;color:var(--text)}
+.q-text-en{font-size:.85em;line-height:1.5;color:var(--text2);margin-bottom:28px;font-style:italic}
+.likert{display:flex;flex-direction:column;gap:10px}
+.likert-btn{padding:12px 16px;background:var(--bg);border:1px solid var(--bg3);border-radius:8px;color:var(--text);cursor:pointer;transition:all .2s;text-align:center;font-size:.95em}
+.likert-btn:hover{border-color:var(--gold);background:rgba(255,215,0,.05)}
+.likert-btn:active{transform:scale(.98)}
+.likert-btn .cn{display:block;font-weight:600}
+.likert-btn .en{display:block;font-size:.8em;color:var(--text2)}
+
+/* Results */
+#result{display:none;padding-top:20px;animation:fadeIn .6s ease}
+.result-card{background:var(--bg2);border:1px solid var(--gold);border-radius:16px;padding:32px 24px;text-align:center;margin-bottom:20px}
+.result-card .nations{font-size:1.8em;margin-bottom:8px}
+.result-card h2{font-size:1.8em;color:var(--gold);margin-bottom:4px}
+.result-card .type{color:var(--text2);font-size:.9em;margin-bottom:16px}
+.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:20px}
+.tag{padding:4px 12px;border-radius:20px;font-size:.8em;font-weight:600}
+.tag-l{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid rgba(255,215,0,.3)}
+.tag-r{background:rgba(74,93,35,.3);color:var(--green2);border:1px solid rgba(74,93,35,.5)}
+.desc{margin:20px 0;text-align:left}
+.desc-cn{font-size:1em;line-height:1.7;margin-bottom:8px}
+.desc-en{font-size:.85em;line-height:1.5;color:var(--text2);font-style:italic}
+canvas#radar{display:block;margin:20px auto;max-width:100%}
+.runners-up{margin-top:20px}
+.runners-up h3{color:var(--text2);font-size:.9em;margin-bottom:12px;text-align:center}
+.runner{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border:1px solid var(--bg3);border-radius:8px;margin-bottom:8px}
+.runner .name{font-weight:600;font-size:.95em}
+.runner .pct{color:var(--gold);font-size:.9em}
+.actions{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div class="container">
+
+<div id="landing">
+  <div class="hero">⚔️</div>
+  <h1>你是什么军事装备？</h1>
+  <p class="subtitle">What Military Equipment Are You?</p>
+  <p style="color:var(--text2);margin-bottom:32px;font-size:.9em">13道题，发现你的军事人格<br>13 questions to find your military personality</p>
+  <button class="btn" onclick="startQuiz()">开始测试 / Start</button>
+</div>
+
+<div id="quiz">
+  <div class="q-counter" id="qCounter"></div>
+  <div class="q-card" id="qCard">
+    <div class="q-text-cn" id="qTextCN"></div>
+    <div class="q-text-en" id="qTextEN"></div>
+    <div class="likert" id="likert"></div>
+  </div>
+</div>
+
+<div id="result">
+  <div class="result-card" id="resultCard"></div>
+  <canvas id="radar" width="320" height="320"></canvas>
+  <div class="runners-up" id="runnersUp"></div>
+  <div class="actions">
+    <button class="btn btn-sm" onclick="shareResult()">分享 / Share</button>
+    <button class="btn btn-sm" onclick="location.reload()">重新测试 / Retake</button>
+  </div>
+</div>
+
+</div>
+<script>
+const ASPECTS=[
+{code:"NEW_OLD",leftCN:"新锐",leftEN:"Hi-Tech",rightCN:"经典",rightEN:"Battle-Proven"},
+{code:"FRT_SUP",leftCN:"前线",leftEN:"Frontline",rightCN:"后方",rightEN:"Support"},
+{code:"SUP_PRC",leftCN:"覆盖",leftEN:"Suppression",rightCN:"精确",rightEN:"Precision"},
+{code:"AIR_GND",leftCN:"空中",leftEN:"Air",rightCN:"地面",rightEN:"Ground"},
+{code:"HVY_LGT",leftCN:"重甲",leftEN:"Heavy Armor",rightCN:"轻甲",rightEN:"Light Armor"},
+{code:"HQ_SWM",leftCN:"精锐",leftEN:"Elite",rightCN:"蜂群",rightEN:"Swarm"},
+{code:"STL_PRS",leftCN:"隐匿",leftEN:"Stealth",rightCN:"威慑",rightEN:"Presence"},
+{code:"DEF_ATK",leftCN:"防御",leftEN:"Defensive",rightCN:"进攻",rightEN:"Offensive"},
+{code:"CQ_SO",leftCN:"近距",leftEN:"Close Range",rightCN:"远程",rightEN:"Standoff"},
+{code:"SAFE_RSK",leftCN:"安全",leftEN:"Low Risk",rightCN:"赴险",rightEN:"High Risk"}
+];
+
+const EQUIPMENT=[
+{id:"T80U-M1A2",nameCN:"T-80U / M1A2 艾布拉姆斯",nameEN:"T-80U / M1A2 Abrams",typeCN:"主战坦克（精锐）",typeEN:"Main Battle Tank (Elite)",nations:"🇷🇺 🇺🇸",scores:[4,2,8,10,1,2,8,9,2,6],
+descCN:"你是战场上的钢铁之王。厚重的装甲是你的自信，精准的主炮是你的态度。你不需要躲藏——你就是正面推进的代名词，敌人看到你的轮廓就知道大势已去。",
+descEN:"You are the iron monarch of the battlefield. Your thick armor is your confidence, your main gun is your statement. You don't hide — you ARE the advance, and enemies know the game is over when they see your silhouette on the horizon."},
+{id:"T-72",nameCN:"T-72",nameEN:"T-72",typeCN:"主战坦克（量产型）",typeEN:"Main Battle Tank (Mass-Produced)",nations:"🇷🇺",scores:[9,2,6,10,3,9,8,9,2,9],
+descCN:"你是不可阻挡的钢铁洪流。也许你不是最精致的，但你从不独行——当一百辆你同时碾过地平线，任何防线都将崩溃。你信奉一个真理：数量本身就是质量。",
+descEN:"You are the unstoppable steel flood. You may not be the fanciest, but you never fight alone — when a hundred of you roll over the horizon, every defense line crumbles. Your creed: quantity has a quality all its own."},
+{id:"BMP3-M2A3",nameCN:"BMP-3 / M2A3 布雷德利",nameEN:"BMP-3 / M2A3 Bradley",typeCN:"步兵战车",typeEN:"Infantry Fighting Vehicle",nations:"🇷🇺 🇺🇸",scores:[6,3,7,10,6,6,7,8,2,8],
+descCN:"你是前线的多面手。火力、运输、侦察——你什么都能干，而且干得不赖。别人嫌你不够专精？等他们发现你能同时反坦克和运兵的时候就不这么说了。",
+descEN:"You're the frontline jack-of-all-trades. Firepower, transport, recon — you do it all, and you do it well. They say you're not specialized enough? Wait till they see you killing tanks AND carrying infantry at the same time."},
+{id:"BMPT",nameCN:"BMPT 终结者",nameEN:"BMPT Terminator",typeCN:"火力支援战车",typeEN:"Fire Support Vehicle",nations:"🇷🇺",scores:[2,2,3,10,2,2,9,10,2,5],
+descCN:"你是纯粹的暴力美学。双管30毫米机炮、反坦克导弹、榴弹发射器——你浑身上下都在说同一句话：'我来了，你完了。'你不防守，你只进攻。",
+descEN:"You are pure, distilled aggression. Twin 30mm cannons, ATGMs, grenade launchers — every inch of you screams one message: 'I'm here, you're done.' Defense isn't in your vocabulary."},
+{id:"PZH2",nameCN:"PzH 2000",nameEN:"PzH 2000",typeCN:"自行榴弹炮",typeEN:"Self-Propelled Howitzer",nations:"🇪🇺",scores:[3,8,8,10,5,3,7,9,9,3],
+descCN:"你是幕后的精密操盘手。三十公里外的目标？弹无虚发。你从不需要亲临前线——你的精准是你最致命的武器，而你的安全距离是你最聪明的策略。",
+descEN:"You're the precision mastermind behind the curtain. A target 30 klicks out? Every round finds its mark. You never need to visit the frontline — your accuracy is your deadliest weapon, and your safe distance is your smartest strategy."},
+{id:"MLRS-GRAD",nameCN:"MLRS / BM-21 冰雹",nameEN:"MLRS / BM-21 Grad",typeCN:"火箭炮",typeEN:"Rocket Artillery",nations:"🇺🇸 🇷🇺",scores:[8,8,1,10,8,9,9,9,8,4],
+descCN:"你是天降暴雨。当你齐射的时候，整个天空都在燃烧。精确？那是别人的事——你的哲学是让目标区域内什么都不剩。便宜、量大、效果好。",
+descEN:"You are the rain of fire. When you volley, the entire sky burns. Precision? That's someone else's job — your philosophy is to leave nothing standing in the target area. Cheap, plentiful, devastatingly effective."},
+{id:"TOS1",nameCN:"TOS-1 烈日",nameEN:"TOS-1 Solntsepyok",typeCN:"温压火箭炮",typeEN:"Thermobaric MLRS",nations:"🇷🇺",scores:[6,7,1,10,4,4,10,10,4,8],
+descCN:"你是战场上最令人恐惧的存在。温压弹的恐怖不在于爆炸，而在于爆炸后的真空。你不只是消灭敌人——你让他们在战斗开始前就丧失所有抵抗的意志。",
+descEN:"You are the most terrifying thing on the battlefield. The horror of thermobaric warheads isn't the blast — it's the vacuum that follows. You don't just destroy the enemy — you annihilate their will to fight before the battle even begins."},
+{id:"2K22-AVNG-HQ61",nameCN:"2K22 通古斯卡 / 复仇者 / 红旗-61",nameEN:"2K22 Tunguska / Avenger / HQ-61",typeCN:"近程防空",typeEN:"Short-Range Air Defense",nations:"🇷🇺 🇺🇸 🇨🇳",scores:[7,7,6,10,6,7,7,2,3,5],
+descCN:"你是默默无闻的守护者。当敌机低空突防时，你是最后一道防线。没人会在胜利后歌颂你，但每个人都知道——没有你，那些坦克和指挥所一个都活不下来。",
+descEN:"You're the unsung guardian. When enemy aircraft come in low, you're the last line of defense. Nobody sings your praises after the victory, but everyone knows — without you, those tanks and command posts wouldn't have survived."},
+{id:"PAC3-S400",nameCN:"爱国者 PAC-3 / S-400 凯旋",nameEN:"Patriot PAC-3 / S-400 Triumf",typeCN:"远程防空导弹",typeEN:"Strategic SAM System",nations:"🇺🇸 🇷🇺",scores:[2,9,9,10,4,2,6,1,9,2],
+descCN:"你是战略级的隐形盾牌。四百公里的射程就是你划定的禁飞区——谁敢进来，谁就回不去。你不需要进攻，因为你的存在本身就改变了整个战场的规则。",
+descEN:"You are the strategic invisible shield. Your 400-kilometer range IS the no-fly zone — enter at your own peril. You don't need to attack, because your mere existence rewrites the rules of the entire battlefield."},
+{id:"ADATS",nameCN:"ADATS",nameEN:"ADATS",typeCN:"防空反坦克系统",typeEN:"Air Defense Anti-Tank System",nations:"🇨🇦",scores:[3,5,9,10,5,2,5,3,4,5],
+descCN:"你是无法被归类的异端。防空？能打。反坦克？也行。你拒绝被定义，拒绝只做一件事。当别人还在讨论该用什么武器时，你已经两个都打完了。",
+descEN:"You're the unclassifiable maverick. Air defense? Can do. Anti-tank? Also yes. You refuse to be pigeonholed, refuse to do just one thing. While others debate which weapon to use, you've already engaged both targets."},
+{id:"KA52",nameCN:"卡-52 短吻鳄",nameEN:"Ka-52 Alligator",typeCN:"武装直升机（精锐）",typeEN:"Attack Helicopter (Elite)",nations:"🇷🇺",scores:[2,3,7,1,3,2,4,9,2,8],
+descCN:"你是天空中的孤独猎手。共轴反转旋翼让你能做出其他直升机想都不敢想的动作，弹射座椅让你敢于深入虎穴。你是精英中的精英，但你也清楚——每次出击都可能是最后一次。",
+descEN:"You're the lone predator of the skies. Coaxial rotors let you pull maneuvers other helicopters can't even dream of, and ejection seats mean you dare to go where others won't. You're the elite of the elite — but you know every sortie could be your last."},
+{id:"AH64",nameCN:"AH-64 阿帕奇",nameEN:"AH-64 Apache",typeCN:"武装直升机",typeEN:"Attack Helicopter",nations:"🇺🇸",scores:[5,4,7,1,6,6,5,9,2,7],
+descCN:"你是空中猎杀的代名词。长弓雷达是你的鹰眼，地狱火导弹是你的利爪。你不像卡-52那样孤傲——你更喜欢成群结队出动，用数量和火力织成一张死亡之网。",
+descEN:"You are synonymous with aerial destruction. The Longbow radar is your eagle eye, Hellfires are your talons. Unlike the Ka-52, you're not a loner — you prefer hunting in packs, weaving a web of death with numbers and firepower."},
+{id:"A10C",nameCN:"A-10C 疣猪",nameEN:"A-10C Warthog",typeCN:"近距空中支援",typeEN:"Close Air Support",nations:"🇺🇸",scores:[9,6,3,1,3,5,9,9,1,9],
+descCN:"你是BRRRT的化身。钛合金浴缸护着你的命，七管加特林就是你的灵魂。你飞得又低又慢，直接钻进敌人的防空火力网里——因为你的地面兄弟需要你，而你从不让他们失望。",
+descEN:"You ARE the BRRRT. A titanium bathtub protects your life, a seven-barrel Gatling gun IS your soul. You fly low and slow, right into the teeth of enemy air defenses — because your brothers on the ground need you, and you never let them down."},
+{id:"AC130",nameCN:"AC-130 空中炮艇",nameEN:"AC-130 Spectre/Ghostrider",typeCN:"空中炮艇",typeEN:"Gunship",nations:"🇺🇸",scores:[7,8,2,1,4,2,8,9,5,7],
+descCN:"你是盘旋在夜空中的死神。105毫米榴弹炮、40毫米博福斯、25毫米链炮——从天而降的火力覆盖让地面上的一切化为灰烬。你需要制空权才能生存，但一旦你到场，游戏就结束了。",
+descEN:"You are death circling in the night sky. A 105mm howitzer, 40mm Bofors, 25mm chain gun — your rain of fire from above turns everything on the ground to ash. You need air superiority to survive, but once you arrive, the game is over."},
+{id:"F16-MG29",nameCN:"F-16 战隼 / MiG-29 支点",nameEN:"F-16 Viper / MiG-29 Fulcrum",typeCN:"轻型多用途战斗机",typeEN:"Light Multirole Fighter",nations:"🇺🇸 🇷🇺",scores:[6,3,7,1,8,9,6,8,8,6],
+descCN:"你是天空中的万金油。不是最隐身的，不是最快的，不是最贵的——但你哪里都在，什么都能干。四千多架的产量说明一切：你是经过验证的、最具性价比的空中力量。",
+descEN:"You're the sky's jack-of-all-trades. Not the stealthiest, not the fastest, not the priciest — but you're everywhere and you can do anything. 4,600+ built says it all: you are the proven, most cost-effective airpower on the planet."},
+{id:"F22-SU57",nameCN:"F-22 猛禽 / Su-57 暗棋",nameEN:"F-22 Raptor / Su-57 Felon",typeCN:"第五代制空战斗机",typeEN:"5th Gen Air Superiority Fighter",nations:"🇺🇸 🇷🇺",scores:[1,2,9,1,7,1,1,9,8,2],
+descCN:"你是隐形的天空之王。敌人的雷达上什么都看不到，但你已经锁定了他们。你是少数中的少数——全世界只有不到两百架的你，每一架都价值连城，每一架都无可替代。",
+descEN:"You are the invisible king of the sky. Nothing shows on enemy radar, but you've already locked on. You are the rarest of the rare — fewer than 200 of you exist in the entire world, each one priceless, each one irreplaceable."},
+{id:"F35A",nameCN:"F-35A 闪电II",nameEN:"F-35A Lightning II",typeCN:"隐身多用途战斗机",typeEN:"Stealth Multirole Fighter",nations:"🇺🇸",scores:[1,6,8,1,7,3,2,7,8,3],
+descCN:"你是信息化战争的化身。隐身只是你的入场券——你真正的力量在于连接一切：传感器、数据链、态势感知。你不只是一架战斗机，你是整个作战网络的核心节点。",
+descEN:"You are network-centric warfare incarnate. Stealth is just your entry ticket — your real power is connecting everything: sensors, data links, situational awareness. You're not just a fighter jet, you're the central node of the entire combat network."},
+{id:"B-2",nameCN:"B-2 幽灵",nameEN:"B-2 Spirit",typeCN:"隐身战略轰炸机",typeEN:"Stealth Strategic Bomber",nations:"🇺🇸",scores:[1,9,8,1,6,1,1,10,9,1],
+descCN:"你是二十亿美元的幽灵。从密苏里起飞，无声无息地穿越半个地球，投下毁灭，然后消失得无影无踪。你是人类有史以来建造的最昂贵、最隐秘、最致命的飞行器。",
+descEN:"You are a two-billion-dollar ghost. Take off from Missouri, silently cross half the globe, deliver devastation, then vanish without a trace. You are the most expensive, most secretive, most lethal flying machine humanity has ever built."},
+{id:"Tu160-B1B",nameCN:"Tu-160 白天鹅 / B-1B 枪骑兵",nameEN:"Tu-160 Blackjack / B-1B Lancer",typeCN:"战略轰炸机",typeEN:"Strategic Bomber",nations:"🇷🇺 🇺🇸",scores:[5,4,3,1,5,3,8,10,9,4],
+descCN:"你是超音速的战略铁拳。不需要隐身——你用纯粹的速度和巡航导弹齐射碾碎一切。白天鹅的优雅外表下，是足以改变战争走向的毁灭性载弹量。",
+descEN:"You are the supersonic strategic sledgehammer. No need for stealth — you crush everything with raw speed and cruise missile salvos. Beneath the White Swan's elegant exterior lies a payload devastating enough to change the course of a war."}
+];
+
+const QUESTIONS=[
+{id:"Q1",textCN:"与其把资源集中在少数精锐装备上，不如用同样的预算装备大量够用的单位——数量本身就是一种压倒性优势。",textEN:"Instead of pouring resources into a few elite weapons, the same budget is better spent fielding a large number of good-enough units — numbers win wars.",scoring:{HQ_SWM:1}},
+{id:"Q2",textCN:"最好的防御就是进攻——与其被动等待敌人来袭，不如主动出击把威胁消灭在萌芽状态。",textEN:"The best defense is a good offense — why wait for the enemy to come to you when you can take the fight to them first?",scoring:{DEF_ATK:1}},
+{id:"Q3",textCN:"我宁愿选择经过实战反复检验的老装备，也不愿赌在一台可能在关键时刻出故障的新式武器上。",textEN:"I'd rather go to war with proven gear that's been through hell and back, than bet my life on shiny new tech that might fail when it matters most.",scoring:{NEW_OLD:1}},
+{id:"Q4",textCN:"真正决定战争胜负的不是冲在最前面的人，而是在后方提供火力、情报和保障的支援力量。",textEN:"Victory doesn't belong to whoever charges first — it belongs to the support forces behind them providing the firepower, intel, and logistics.",scoring:{FRT_SUP:1}},
+{id:"Q5",textCN:"一发精确制导弹药的价值，远超一百发覆盖射击——在现代战场上，精确打击才是王道。",textEN:"One well-placed smart bomb beats a hundred dumb rounds — precision is everything on the modern battlefield.",scoring:{SUP_PRC:1}},
+{id:"Q6",textCN:"制空权固然重要，但战争最终是在地面上决出胜负的——只有地面力量才能真正占领和控制。",textEN:"Air power is flashy, but wars are won on the ground — only boots on the dirt can truly take and hold territory.",scoring:{AIR_GND:1}},
+{id:"Q7",textCN:"装甲越厚越好的时代已经过去了——现代战场上，机动性和速度比任何装甲板都更能保命。",textEN:"Piling on more armor is yesterday's thinking — on today's battlefield, speed and agility keep you alive better than any steel plate.",scoring:{HVY_LGT:1}},
+{id:"Q8",textCN:"隐身和潜行被高估了——真正的威慑来自让敌人清楚地看到你的力量，让他们在开战之前就丧失斗志。",textEN:"Stealth is overrated — real power means the enemy sees you coming and loses the will to fight before a single shot is fired.",scoring:{STL_PRS:1}},
+{id:"Q9",textCN:"能在敌人射程之外解决问题，就绝不靠近——保持距离就是保持优势。",textEN:"If you can hit them from beyond their reach, there's no reason to get closer — distance is advantage.",scoring:{CQ_SO:1}},
+{id:"Q10",textCN:"我愿意将自己暴露在危险中来换取战术优势——即使可能被击毁，在关键时刻消灭敌人就是值得的。",textEN:"I'd put myself in harm's way for a tactical edge — even if it means going down, taking out the enemy at the decisive moment is worth the trade.",scoring:{SAFE_RSK:1}},
+{id:"Q11",textCN:"一支军队最不可或缺的角色，不是冲锋陷阵的矛头，而是默默守护后方、确保全局不崩的盾牌。",textEN:"The most critical role in any army isn't the spearhead breaking through — it's the shield quietly holding the line and keeping everything from falling apart.",scoring:{FRT_SUP:1,DEF_ATK:-1}},
+{id:"Q12",textCN:"一台下一代武器系统的战场价值，抵得上一百台老旧型号——科技碾压数量。",textEN:"One next-gen weapon system on the battlefield is worth a hundred legacy ones — technology beats numbers, every time.",scoring:{NEW_OLD:-1,HQ_SWM:-1}},
+{id:"Q13",textCN:"隔着几十公里发射导弹算什么本事？真正的勇士是贴脸打的——狭路相逢勇者胜。",textEN:"Lobbing missiles from 50 kilometers away — where's the skill in that? Real warriors close the distance and fight face to face.",scoring:{CQ_SO:-1,SAFE_RSK:1}}
+];
+
+const LIKERT_OPTIONS=[
+{labelCN:"非常同意",labelEN:"Strongly Agree",value:3},
+{labelCN:"同意",labelEN:"Agree",value:1.5},
+{labelCN:"中立",labelEN:"Neutral",value:0},
+{labelCN:"不同意",labelEN:"Disagree",value:-1.5},
+{labelCN:"非常不同意",labelEN:"Strongly Disagree",value:-3}
+];
+
+// State
+let currentQ = 0;
+let scores = [5,5,5,5,5,5,5,5,5,5]; // 10 aspects, all start neutral
+const aspectIndex = {};
+ASPECTS.forEach((a,i) => aspectIndex[a.code] = i);
+
+function startQuiz() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  showQuestion(0);
+}
+
+function showQuestion(idx) {
+  currentQ = idx;
+  const q = QUESTIONS[idx];
+  const pct = ((idx) / QUESTIONS.length * 100).toFixed(0);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('qCounter').textContent = `${idx + 1} / ${QUESTIONS.length}`;
+
+  const card = document.getElementById('qCard');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = 'slideIn .4s ease';
+
+  document.getElementById('qTextCN').textContent = q.textCN;
+  document.getElementById('qTextEN').textContent = q.textEN;
+
+  const likert = document.getElementById('likert');
+  likert.innerHTML = '';
+  LIKERT_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'likert-btn';
+    btn.innerHTML = `<span class="cn">${opt.labelCN}</span><span class="en">${opt.labelEN}</span>`;
+    btn.onclick = () => answer(q, opt.value);
+    likert.appendChild(btn);
+  });
+}
+
+function answer(question, value) {
+  // Apply scoring
+  for (const [aspect, direction] of Object.entries(question.scoring)) {
+    const idx = aspectIndex[aspect];
+    if (idx !== undefined) {
+      scores[idx] = Math.max(1, Math.min(10, scores[idx] + value * direction));
+    }
+  }
+
+  if (currentQ < QUESTIONS.length - 1) {
+    showQuestion(currentQ + 1);
+  } else {
+    showResult();
+  }
+}
+
+function euclideanDist(a, b) {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) {
+    sum += (a[i] - b[i]) ** 2;
+  }
+  return Math.sqrt(sum);
+}
+
+function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('progressBar').style.width = '100%';
+
+  // Calculate distances
+  const results = EQUIPMENT.map(eq => ({
+    ...eq,
+    dist: euclideanDist(scores, eq.scores)
+  }));
+  results.sort((a, b) => a.dist - b.dist);
+
+  const best = results[0];
+  const maxDist = Math.sqrt(10 * 81); // max possible distance (all 1 vs all 10)
+  const matchPct = ((1 - best.dist / maxDist) * 100).toFixed(0);
+
+  // Build tags
+  const tags = ASPECTS.map((asp, i) => {
+    const isLeft = scores[i] <= 5;
+    return `<span class="tag ${isLeft ? 'tag-l' : 'tag-r'}">${isLeft ? asp.leftCN : asp.rightCN}</span>`;
+  }).join('');
+
+  // Result card
+  document.getElementById('resultCard').innerHTML = `
+    <div class="nations">${best.nations}</div>
+    <h2>${best.nameCN}</h2>
+    <p style="color:var(--text2);font-size:.95em;margin-bottom:4px">${best.nameEN}</p>
+    <p class="type">${best.typeCN} / ${best.typeEN}</p>
+    <div class="tags">${tags}</div>
+    <p style="color:var(--gold);font-size:1.1em;font-weight:700;margin-bottom:16px">匹配度 ${matchPct}%</p>
+    <div class="desc">
+      <p class="desc-cn">${best.descCN}</p>
+      <p class="desc-en">${best.descEN}</p>
+    </div>
+  `;
+
+  // Radar chart
+  drawRadar(scores, best.scores);
+
+  // Runners up
+  const ru = document.getElementById('runnersUp');
+  ru.innerHTML = '<h3>其他可能的你 / You Could Also Be</h3>';
+  for (let i = 1; i <= Math.min(3, results.length - 1); i++) {
+    const r = results[i];
+    const pct = ((1 - r.dist / maxDist) * 100).toFixed(0);
+    ru.innerHTML += `
+      <div class="runner">
+        <span class="name">${r.nations} ${r.nameCN}</span>
+        <span class="pct">${pct}%</span>
+      </div>`;
+  }
+
+  // Store for share
+  window._result = best;
+  window._matchPct = matchPct;
+}
+
+function drawRadar(userScores, eqScores) {
+  const canvas = document.getElementById('radar');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const size = Math.min(360, window.innerWidth - 40);
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  ctx.scale(dpr, dpr);
+
+  const cx = size / 2, cy = size / 2;
+  const r = size * 0.38;
+  const n = ASPECTS.length;
+  const angleStep = (2 * Math.PI) / n;
+  const startAngle = -Math.PI / 2;
+
+  // Background circles
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  for (let ring = 1; ring <= 5; ring++) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * ring / 5, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+
+  // Axis lines and labels
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < n; i++) {
+    const angle = startAngle + i * angleStep;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.stroke();
+
+    // Label
+    const lx = cx + (r + 18) * Math.cos(angle);
+    const ly = cy + (r + 18) * Math.sin(angle);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText(ASPECTS[i].leftCN + '/' + ASPECTS[i].rightCN, lx, ly + 4);
+  }
+
+  function drawPoly(values, strokeColor, fillColor, lineWidth) {
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const angle = startAngle + i * angleStep;
+      const v = values[i] / 10;
+      const x = cx + r * v * Math.cos(angle);
+      const y = cy + r * v * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  // Equipment polygon
+  drawPoly(eqScores, 'rgba(74,93,35,0.8)', 'rgba(74,93,35,0.15)', 2);
+  // User polygon
+  drawPoly(userScores, 'rgba(255,215,0,0.9)', 'rgba(255,215,0,0.12)', 2.5);
+
+  // Legend
+  ctx.fillStyle = 'rgba(255,215,0,0.9)';
+  ctx.fillRect(12, size - 28, 12, 12);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('你 / You', 28, size - 18);
+
+  ctx.fillStyle = 'rgba(74,93,35,0.8)';
+  ctx.fillRect(90, size - 28, 12, 12);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillText('装备 / Equipment', 106, size - 18);
+}
+
+function shareResult() {
+  const r = window._result;
+  const text = `我的军事人格是：${r.nameCN}！匹配度 ${window._matchPct}%\nMy military personality: ${r.nameEN}! ${window._matchPct}% match\n\n${r.descCN}\n\n来测测你是什么军事装备？`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('已复制到剪贴板！/ Copied to clipboard!');
+    });
+  } else {
+    prompt('复制以下内容分享 / Copy to share:', text);
+  }
+}
+
+</script>
+</body>
+</html>
