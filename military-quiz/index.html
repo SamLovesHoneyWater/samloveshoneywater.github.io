@@ -353,6 +353,7 @@ function showResult() {
   // Store for share
   window._result = best;
   window._matchPct = matchPct;
+  window._allResults = results;
 }
 
 function drawRadar(userScores, eqScores) {
@@ -367,7 +368,7 @@ function drawRadar(userScores, eqScores) {
   ctx.scale(dpr, dpr);
 
   const cx = size / 2, cy = size / 2;
-  const r = size * 0.38;
+  const r = size * 0.34;
   const n = ASPECTS.length;
   const angleStep = (2 * Math.PI) / n;
   const startAngle = -Math.PI / 2;
@@ -447,155 +448,287 @@ function shareResult() {
   var r = window._result;
   var matchPct = window._matchPct;
   var userScores = scores;
+  var results = window._allResults;
   
-  // Create share card canvas
-  var W = 1080, H = 1350;
+  var W = 1080, H = 1920;
   var c = document.createElement('canvas');
   c.width = W; c.height = H;
   var ctx = c.getContext('2d');
+  var pad = 60;
   
   // Background
   ctx.fillStyle = '#0d1117';
   ctx.fillRect(0, 0, W, H);
   
-  // Subtle border
-  ctx.strokeStyle = 'rgba(255,215,0,0.3)';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(20, 20, W-40, H-40);
+  // Gold border
+  ctx.strokeStyle = 'rgba(255,215,0,0.25)';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(24, 24, W-48, H-48);
   
-  // Header
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = '28px sans-serif';
+  // --- HEADER ---
+  var y = 72;
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.font = '26px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('你的军事人格是 / YOUR MILITARY PERSONA', W/2, 80);
+  ctx.fillText('你的军事人格是 / YOUR MILITARY PERSONA', W/2, y);
   
   // Big persona code
+  y += 80;
   ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 96px Impact, "Arial Black", sans-serif';
-  ctx.fillText(r.code, W/2, 180);
+  ctx.font = 'bold 108px Impact, "Arial Black", sans-serif';
+  ctx.fillText(r.code, W/2, y);
   
   // Nations
-  ctx.font = '48px sans-serif';
-  ctx.fillText(r.nations, W/2, 240);
+  y += 50;
+  ctx.font = '44px sans-serif';
+  ctx.fillText(r.nations, W/2, y);
   
-  // Equipment image (if loaded)
+  // --- IMAGE ---
+  y += 20;
   var imgEl = document.querySelector('.eq-img');
-  var imgY = 260;
   if (imgEl && imgEl.naturalWidth > 0) {
-    var iw = 600, ih = 340;
+    var iw = W - pad*2, ih = 380;
     var sx = 0, sy = 0, sw = imgEl.naturalWidth, sh = imgEl.naturalHeight;
-    // Center crop
     var aspectSrc = sw/sh, aspectDst = iw/ih;
     if (aspectSrc > aspectDst) { var nw = sh * aspectDst; sx = (sw-nw)/2; sw = nw; }
     else { var nh = sw / aspectDst; sy = (sh-nh)/2; sh = nh; }
-    ctx.drawImage(imgEl, sx, sy, sw, sh, (W-iw)/2, imgY, iw, ih);
-    imgY += ih + 16;
+    // Rounded corners via clip
+    ctx.save();
+    var imgX = pad, imgY2 = y;
+    ctx.beginPath();
+    ctx.roundRect(imgX, imgY2, iw, ih, 12);
+    ctx.clip();
+    ctx.drawImage(imgEl, sx, sy, sw, sh, imgX, imgY2, iw, ih);
+    ctx.restore();
+    y += ih + 24;
   }
   
-  // Name
+  // --- NAME ---
   ctx.fillStyle = '#e6edf3';
-  ctx.font = 'bold 40px sans-serif';
-  ctx.fillText(r.nameCN, W/2, imgY + 10);
+  ctx.font = 'bold 44px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(r.nameCN, W/2, y);
+  y += 36;
   ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = '24px sans-serif';
-  ctx.fillText(r.nameEN, W/2, imgY + 45);
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '26px sans-serif';
+  ctx.fillText(r.nameEN, W/2, y);
+  y += 32;
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.font = '22px sans-serif';
-  ctx.fillText(r.typeCN + ' / ' + r.typeEN, W/2, imgY + 78);
+  ctx.fillText(r.typeCN + ' / ' + r.typeEN, W/2, y);
   
-  // Match percentage
+  // --- TAGS ---
+  y += 36;
+  var tagTexts = ASPECTS.map(function(asp, i) {
+    return userScores[i] <= 5 ? asp.leftCN : asp.rightCN;
+  });
+  // Draw tags in a wrapped row
+  ctx.font = 'bold 18px sans-serif';
+  var tagPad = 14, tagGap = 8, tagH = 32;
+  var totalTagW = 0;
+  var tagWidths = tagTexts.map(function(t) { return ctx.measureText(t).width + tagPad*2; });
+  // Center the tags — split into rows if needed
+  var rows = [], row = [], rowW = 0, maxRowW = W - pad*2;
+  for (var ti = 0; ti < tagTexts.length; ti++) {
+    if (rowW + tagWidths[ti] + tagGap > maxRowW && row.length > 0) {
+      rows.push({items: row, width: rowW - tagGap});
+      row = []; rowW = 0;
+    }
+    row.push(ti);
+    rowW += tagWidths[ti] + tagGap;
+  }
+  if (row.length) rows.push({items: row, width: rowW - tagGap});
+  
+  for (var ri = 0; ri < rows.length; ri++) {
+    var rx = (W - rows[ri].width) / 2;
+    for (var ci = 0; ci < rows[ri].items.length; ci++) {
+      var idx = rows[ri].items[ci];
+      var tw = tagWidths[idx];
+      var isLeft = userScores[idx] <= 5;
+      ctx.fillStyle = isLeft ? 'rgba(74,93,35,0.6)' : 'rgba(255,215,0,0.15)';
+      ctx.beginPath();
+      ctx.roundRect(rx, y, tw, tagH, 16);
+      ctx.fill();
+      ctx.fillStyle = isLeft ? '#8bba25' : '#ffd700';
+      ctx.textAlign = 'center';
+      ctx.fillText(tagTexts[idx], rx + tw/2, y + 22);
+      rx += tw + tagGap;
+    }
+    y += tagH + 6;
+  }
+  
+  // --- MATCH PCT ---
+  y += 12;
   ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 36px sans-serif';
-  ctx.fillText('匹配度 ' + matchPct + '%', W/2, imgY + 128);
+  ctx.font = 'bold 40px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('匹配度 ' + matchPct + '%', W/2, y);
   
-  // Mini radar chart
-  var radarCx = W/2, radarCy = imgY + 310, radarR = 140;
+  // --- DESCRIPTION ---
+  y += 32;
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = '22px sans-serif';
+  ctx.textAlign = 'left';
+  // Word-wrap Chinese description
+  var descLines = wrapText(ctx, r.descCN, W - pad*2);
+  for (var di = 0; di < Math.min(descLines.length, 4); di++) {
+    ctx.fillText(descLines[di], pad, y);
+    y += 30;
+  }
+  y += 4;
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = 'italic 18px sans-serif';
+  var descEnLines = wrapText(ctx, r.descEN, W - pad*2);
+  for (var di = 0; di < Math.min(descEnLines.length, 3); di++) {
+    ctx.fillText(descEnLines[di], pad, y);
+    y += 24;
+  }
+  
+  // --- RADAR CHART ---
+  y += 20;
+  var radarCx = W/2, radarCy = y + 150, radarR = 130;
   var n = ASPECTS.length;
   var angleStep = (2 * Math.PI) / n;
   var startAngle = -Math.PI / 2;
   
-  // Radar background circles
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
   ctx.lineWidth = 1;
   for (var ring = 1; ring <= 5; ring++) {
     ctx.beginPath();
     ctx.arc(radarCx, radarCy, radarR * ring / 5, 0, 2 * Math.PI);
     ctx.stroke();
   }
-  
-  // Radar axes
   for (var i = 0; i < n; i++) {
     var angle = startAngle + i * angleStep;
     ctx.beginPath();
     ctx.moveTo(radarCx, radarCy);
     ctx.lineTo(radarCx + radarR * Math.cos(angle), radarCy + radarR * Math.sin(angle));
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.stroke();
+    // Labels
+    var lx = radarCx + (radarR + 22) * Math.cos(angle);
+    var ly = radarCy + (radarR + 22) * Math.sin(angle);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(ASPECTS[i].rightCN + '(←' + ASPECTS[i].leftCN + ')', lx, ly + 4);
   }
-  
+  // Equipment polygon
+  ctx.beginPath();
+  for (var i = 0; i < n; i++) {
+    var angle = startAngle + i * angleStep;
+    var v = r.scores[i] / 10;
+    var x = radarCx + radarR * v * Math.cos(angle);
+    var yy = radarCy + radarR * v * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(74,93,35,0.15)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(74,93,35,0.7)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
   // User polygon
   ctx.beginPath();
   for (var i = 0; i < n; i++) {
     var angle = startAngle + i * angleStep;
     var v = userScores[i] / 10;
     var x = radarCx + radarR * v * Math.cos(angle);
-    var y = radarCy + radarR * v * Math.sin(angle);
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    var yy = radarCy + radarR * v * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
   }
   ctx.closePath();
-  ctx.fillStyle = 'rgba(255,215,0,0.15)';
+  ctx.fillStyle = 'rgba(255,215,0,0.12)';
   ctx.fill();
   ctx.strokeStyle = 'rgba(255,215,0,0.9)';
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 2;
   ctx.stroke();
   
-  // QR Code (pre-computed)
-  var qrSize = 160;
-  var qrX = W - qrSize - 60, qrY = H - qrSize - 80;
+  // Radar legend
+  var legY = radarCy + radarR + 40;
+  ctx.fillStyle = 'rgba(255,215,0,0.9)';
+  ctx.fillRect(W/2 - 100, legY, 10, 10);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '13px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('你 / You', W/2 - 86, legY + 9);
+  ctx.fillStyle = 'rgba(74,93,35,0.8)';
+  ctx.fillRect(W/2 + 10, legY, 10, 10);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fillText('装备 / Equipment', W/2 + 24, legY + 9);
+  
+  // --- RUNNERS UP ---
+  var ruY = legY + 40;
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('其他可能的你 / You Could Also Be', W/2, ruY);
+  ruY += 28;
+  
+  var maxDist = Math.sqrt(10 * 81);
+  for (var i = 1; i <= Math.min(3, results.length - 1); i++) {
+    var ru = results[i];
+    var ruPct = ((1 - ru.dist / maxDist) * 100).toFixed(0);
+    // Background bar
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.beginPath();
+    ctx.roundRect(pad, ruY, W - pad*2, 44, 8);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Name
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(ru.nations + ' ' + ru.nameCN, pad + 16, ruY + 28);
+    // Pct
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(ruPct + '%', W - pad - 16, ruY + 28);
+    ruY += 52;
+  }
+  
+  // --- BOTTOM: QR + CTA ---
+  var qrSize = 140;
+  var qrX = W - qrSize - pad, qrY = H - qrSize - 60;
   var cellSize = qrSize / QR_SIZE;
   
-  // QR white background with rounded corners
+  // QR white bg
   ctx.fillStyle = '#ffffff';
-  ctx.fillRect(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16);
+  ctx.beginPath();
+  ctx.roundRect(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16, 8);
+  ctx.fill();
   
   // QR modules
   ctx.fillStyle = '#0d1117';
-  for (var row = 0; row < QR_SIZE; row++) {
-    for (var col = 0; col < QR_SIZE; col++) {
-      if (QR_MATRIX[row][col]) {
-        ctx.fillRect(qrX + col * cellSize, qrY + row * cellSize, cellSize + 0.5, cellSize + 0.5);
-      }
-    }
-  }
+  for (var row = 0; row < QR_SIZE; row++)
+    for (var col = 0; col < QR_SIZE; col++)
+      if (QR_MATRIX[row][col])
+        ctx.fillRect(qrX + col * cellSize, qrY + row * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
   
-  // CTA text
+  // CTA
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.font = '22px sans-serif';
+  ctx.font = 'bold 24px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('扫码测测你是什么军事装备', 60, H - 100);
+  ctx.fillText('来测测你是什么军事装备？', pad, H - 120);
   ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.font = '18px sans-serif';
-  ctx.fillText('Scan to take the quiz', 60, H - 72);
-
+  ctx.fillText('Scan to take the quiz →', pad, H - 90);
+  
   // Watermark
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.font = '16px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.font = '14px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('军事人格测试 / Military Persona Quiz', W/2, H - 30);
   
-  // Convert to blob and share/download
+  // Export
   c.toBlob(function(blob) {
     var file = new File([blob], 'military-persona-' + r.id + '.png', {type: 'image/png'});
-    
-    // Try native share first (mobile)
     if (navigator.canShare && navigator.canShare({files: [file]})) {
-      navigator.share({
-        files: [file],
-        title: '我的军事人格 / My Military Persona',
-        text: '来测测你是什么军事装备！'
-      }).catch(function(){});
+      navigator.share({files: [file], title: '我的军事人格', text: '来测测你是什么军事装备！'}).catch(function(){});
     } else {
-      // Fallback: download
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = file.name;
@@ -603,6 +736,21 @@ function shareResult() {
       URL.revokeObjectURL(a.href);
     }
   }, 'image/png');
+}
+
+function wrapText(ctx, text, maxWidth) {
+  var lines = [], line = '';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (ctx.measureText(line + ch).width > maxWidth) {
+      lines.push(line);
+      line = ch;
+    } else {
+      line += ch;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
 }
 
 </script>
