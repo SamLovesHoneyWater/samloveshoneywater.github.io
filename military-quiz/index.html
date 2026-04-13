@@ -444,7 +444,7 @@ function drawRadar(userScores, eqScores) {
 function shareResult() {
   var r = window._result;
   var url = 'https://samloveshoneywater.github.io/military-quiz/';
-  var text = '我的军事人格是：' + r.code + ' ' + r.nameCN + '！匹配度 ' + window._matchPct + '%\nMy military persona: ' + r.code + ' ' + r.nameEN + '! ' + window._matchPct + '% match\n\n来测测你是什么军事装备？\nWhat military equipment are you?\n' + url;
+  var text = '我的军事人格是：' + r.nameCN + '！匹配度 ' + window._matchPct + '%\nMy military persona: ' + r.nameEN + '! ' + window._matchPct + '% match\n\n来测测你是什么军事装备？\nWhat military equipment are you?\n' + url;
   if (navigator.share) {
     navigator.share({title: '军事人格测试', text: text, url: url}).catch(function(){});
   } else if (navigator.clipboard) {
