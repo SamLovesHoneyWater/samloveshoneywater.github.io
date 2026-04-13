@@ -399,7 +399,7 @@ function drawRadar(userScores, eqScores) {
     const lx = cx + (r + 18) * Math.cos(angle);
     const ly = cy + (r + 18) * Math.sin(angle);
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText(ASPECTS[i].leftCN + '/' + ASPECTS[i].rightCN, lx, ly + 4);
+    ctx.fillText(ASPECTS[i].rightCN + '(←' + ASPECTS[i].leftCN + ')', lx, ly + 4);
   }
 
   function drawPoly(values, strokeColor, fillColor, lineWidth) {
