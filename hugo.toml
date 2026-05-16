@@ -19,7 +19,7 @@ theme = "paper"
   reactionsEnabled = "1"
   emitMetadata = "0"
   inputPosition = "bottom"
-  theme = "preferred_color_scheme"
+  theme = "light_dark"
   lang = "en"
 
 [markup]
