@@ -12,14 +12,14 @@ theme = "paper"
 
 [params.giscus]
   repo = "SamLovesHoneyWater/samloveshoneywater.github.io"
-  repoId = ""
+  repoId = "R_kgDOPFQQdg"
   category = "Announcements"
-  categoryId = ""
+  categoryId = "DIC_kwDOPFQQds4C9LPC"
   mapping = "pathname"
   reactionsEnabled = "1"
   emitMetadata = "0"
-  inputPosition = "top"
-  theme = "dark"
+  inputPosition = "bottom"
+  theme = "preferred_color_scheme"
   lang = "en"
 
 [markup]
