@@ -140,6 +140,13 @@
           'https://giscus.app'
         );
       }
+      // When giscus iframe loads, set correct initial theme
+      window.addEventListener('message', function(event) {
+        if (event.origin !== 'https://giscus.app') return;
+        if (!(typeof event.data === 'object' && event.data.giscus)) return;
+        // giscus is ready, set theme to match current page state
+        setGiscusTheme(getGiscusTheme());
+      });
       // Watch for dark class changes on <html>
       const observer = new MutationObserver(function() {
         setGiscusTheme(getGiscusTheme());
