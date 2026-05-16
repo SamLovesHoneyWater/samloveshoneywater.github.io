@@ -8,6 +8,7 @@ theme = "paper"
 [params]
   colorScheme = "dark"
   github = "SamLovesHoneyWater"
+  mainSections = ["posts"]
 
 [params.giscus]
   repo = "SamLovesHoneyWater/samloveshoneywater.github.io"
