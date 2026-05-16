@@ -1,0 +1,42 @@
+baseURL = "https://samloveshoneywater.github.io/"
+languageCode = "en-us"
+title = "Sam Huang"
+theme = "paper"
+[pagination]
+  pagerSize = 10
+
+[params]
+  colorScheme = "dark"
+  github = "SamLovesHoneyWater"
+
+[params.giscus]
+  repo = "SamLovesHoneyWater/samloveshoneywater.github.io"
+  repoId = ""
+  category = "Announcements"
+  categoryId = ""
+  mapping = "pathname"
+  reactionsEnabled = "1"
+  emitMetadata = "0"
+  inputPosition = "top"
+  theme = "dark"
+  lang = "en"
+
+[markup]
+  [markup.highlight]
+    style = "monokai"
+    lineNos = false
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[menu]
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/posts/"
+    weight = 1
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 2
